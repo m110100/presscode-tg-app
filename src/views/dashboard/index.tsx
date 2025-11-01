@@ -13,7 +13,6 @@ import { ChannelsStats } from './components/channel-stats';
 import { MultiSelect } from '@/components/ui/multi-select';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ScrollArea } from '@radix-ui/react-scroll-area';
 import { Card } from '@/components/ui/card';
 
 export function DashboardView() {
