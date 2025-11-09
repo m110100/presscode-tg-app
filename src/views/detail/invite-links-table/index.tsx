@@ -1,4 +1,6 @@
 import { useState, useMemo } from 'react';
+import { useDebounce } from '@uidotdev/usehooks';
+import { ArrowDownIcon, ArrowUpIcon, ArrowUpDownIcon, SearchIcon } from 'lucide-react';
 import {
 	useReactTable,
 	getCoreRowModel,
@@ -10,7 +12,7 @@ import {
 } from '@tanstack/react-table';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { ArrowDownIcon, ArrowUpIcon, ArrowUpDownIcon, SearchIcon } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import {
 	Table,
 	TableBody,
@@ -26,26 +28,16 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { useDebounce } from '@uidotdev/usehooks';
+import type { ILinkStats } from '@/shared/schema';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
-type ChannelData = {
-	channelId: number;
-	title: string;
-	membersCount: number;
-	requestCount: number;
-	enter: number;
-	leave: number;
-};
-
 type Props = {
-	data: ChannelData[];
+	data: ILinkStats[];
 	pageSizeOptions?: number[];
-	onRowClick?: (channel: ChannelData) => void;
+	onRowClick?: (inviteLink: ILinkStats) => void;
 };
 
-export function ChannelsTable({ data, pageSizeOptions = [5, 10, 15], onRowClick }: Props) {
+export function InviteLinksTable({ data, pageSizeOptions = [5, 10, 15], onRowClick }: Props) {
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [searchQuery, setSearchQuery] = useState('');
 	const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: data.length || 10 });
@@ -60,7 +52,7 @@ export function ChannelsTable({ data, pageSizeOptions = [5, 10, 15], onRowClick 
 		);
 	}, [data, debouncedSearchQuery]);
 
-	const columns = useMemo<ColumnDef<ChannelData>[]>(
+	const columns = useMemo<ColumnDef<ILinkStats>[]>(
 		() => [
 			{
 				accessorKey: 'title',
@@ -69,15 +61,15 @@ export function ChannelsTable({ data, pageSizeOptions = [5, 10, 15], onRowClick 
 				size: 200,
 			},
 			{
-				accessorKey: 'membersCount',
-				header: () => 'Участников',
+				accessorKey: 'price',
+				header: () => 'Стоимость',
 				cell: (info) => info.getValue(),
 				meta: { align: 'right' },
 				size: 200,
 			},
 			{
-				accessorKey: 'requestCount',
-				header: () => 'Заявок на вступление',
+				accessorKey: 'pendingRequests',
+				header: () => 'Кол-во заявок',
 				cell: (info) => info.getValue(),
 				meta: { align: 'right' },
 				size: 200,
@@ -206,7 +198,7 @@ export function ChannelsTable({ data, pageSizeOptions = [5, 10, 15], onRowClick 
 				<ScrollBar orientation='horizontal' />
 			</ScrollArea>
 
-			{/* Пагинация */}
+			{/* Pagination */}
 			<div className='flex gap-4 items-center justify-between lg:flex-row md:flex-row flex-col'>
 				<div className='text-left w-full text-sm text-muted-foreground'>
 					{pagination.pageSize === filteredData.length ? (

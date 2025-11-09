@@ -14,6 +14,7 @@ import { MultiSelect } from '@/components/ui/multi-select';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card } from '@/components/ui/card';
+import { AuthTelegram } from './components/auth-tg';
 
 export function DashboardView() {
 	const { user } = useAuth();
@@ -82,10 +83,16 @@ export function DashboardView() {
 						/>
 					)}
 				</div>
+				<div>
+					<AuthTelegram />
+				</div>
 			</Card>
 			<div className='flex flex-col'>
 				{isLoading ? (
-					<Skeleton className='h-[400px] w-full' />
+					<div className='flex flex-col gap-6'>
+						<Skeleton className='h-[400px] w-full bg-card' />
+						<Skeleton className='h-[400px] w-full bg-card' />
+					</div>
 				) : (
 					<ChannelsStats bots={selectedBots} channelNames={debouncedChannelNames} />
 				)}

@@ -36,7 +36,10 @@ export function AuthView() {
 					</CardHeader>
 					<CardContent>
 						<Form {...form}>
-							<form className='space-y-4' onSubmit={form.handleSubmit(loginFn)}>
+							<form
+								className='space-y-4 w-full'
+								onSubmit={form.handleSubmit(loginFn)}
+							>
 								<FormField
 									control={form.control}
 									name='login'

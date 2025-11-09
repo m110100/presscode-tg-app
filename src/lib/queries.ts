@@ -6,6 +6,10 @@ import type {
 	IChannelStats,
 	IChannelStatsSchema,
 	ICredentionalsSchema,
+	IInviteLinksSchema,
+	ITelegeram2FASchema,
+	ITelegeramCompleteSchema,
+	ITelegeramStartSchema,
 	IUser,
 } from '@/shared/schema';
 
@@ -69,6 +73,57 @@ export async function fetchUser(credentials: ICredentionalsSchema): Promise<void
 	}
 }
 
+export async function fetchTelegramStart(
+	credentials: ITelegeramStartSchema,
+): Promise<{ status: string }> {
+	const response = await fetch(`${baseUrl}/telegram/authStart`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		credentials: 'include',
+		body: JSON.stringify(credentials),
+	});
+
+	if (!response.ok) {
+		throw new Error(`Login failed: ${response.statusText}`);
+	}
+
+	return response.json();
+}
+
+export async function fetchTelegramComplete(
+	credentials: ITelegeramCompleteSchema,
+): Promise<{ status: string }> {
+	const response = await fetch(`${baseUrl}/telegram/authComplete`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		credentials: 'include',
+		body: JSON.stringify(credentials),
+	});
+
+	if (!response.ok) {
+		throw new Error(`Login failed: ${response.statusText}`);
+	}
+
+	return response.json();
+}
+
+export async function fetchTelegram2FA(
+	credentials: ITelegeram2FASchema,
+): Promise<{ status: string; user?: { id: string; name: string } }> {
+	const response = await fetch(`${baseUrl}/telegram/auth2FA`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		credentials: 'include',
+		body: JSON.stringify(credentials),
+	});
+
+	if (!response.ok) {
+		throw new Error(`Login failed: ${response.statusText}`);
+	}
+
+	return response.json();
+}
+
 export async function fetchChannelStats(
 	user: IUser | null,
 	params: IChannelStatsSchema,
@@ -84,6 +139,23 @@ export async function fetchChannelStats(
 
 	if (!response.ok) {
 		throw new Error(`Failed to fetch channel stats: ${response.statusText}`);
+	}
+
+	return response.json();
+}
+
+export async function fetchDetailChannelStats(user: IUser | null, params: any): Promise<any> {
+	if (!user) return null;
+
+	const response = await fetch(`${baseUrl}/getDetailsStats?login=${user.login}`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		credentials: 'include',
+		body: JSON.stringify(params),
+	});
+
+	if (!response.ok) {
+		throw new Error(`Failed to fetch detail channel stats: ${response.statusText}`);
 	}
 
 	return response.json();
@@ -127,6 +199,26 @@ export async function fetchRetentionDays(
 	return response.json();
 }
 
+export async function fetchInviteLinks(
+	user: IUser | null,
+	params: IInviteLinksSchema,
+): Promise<any> {
+	if (!user) return [];
+
+	const response = await fetch(`${baseUrl}/getInviteLinks?login=${user.login}`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		credentials: 'include',
+		body: JSON.stringify(params),
+	});
+
+	if (!response.ok) {
+		throw new Error(`Failed to fetch invite links: ${response.statusText}`);
+	}
+
+	return response.json();
+}
+
 export function useGetBoards(user: IUser | null) {
 	return useQuery({
 		queryKey: ['boards', user?.login],
@@ -161,11 +253,41 @@ export function useGetChannelStats(user: IUser | null, params: IChannelStatsSche
 	});
 }
 
+export function useGetDetailsChannelStats(user: IUser | null, params: any) {
+	return useQuery({
+		queryKey: [
+			'detailedChannelStats',
+			user?.login,
+			params.channelId,
+			params.dateFrom,
+			params.dateTo,
+		],
+		queryFn: () => fetchDetailChannelStats(user, params),
+		enabled: !!user && !!params.channelId,
+		staleTime: 5 * 60 * 1000,
+	});
+}
+
 export function useGetRetentionDays(user: IUser | null) {
 	return useQuery({
 		queryKey: ['retentionDays', user?.login],
 		queryFn: () => fetchRetentionDays(user),
 		staleTime: 30 * 60 * 1000,
+	});
+}
+
+export function useGetInviteLinks(user: IUser | null, params: IInviteLinksSchema) {
+	return useQuery({
+		queryKey: [
+			'inviteLinks',
+			user?.login,
+			params.channelId,
+			params.dateFrom,
+			params.dateTo,
+		],
+		queryFn: () => fetchInviteLinks(user, params),
+		staleTime: 5 * 60 * 1000,
+		enabled: !!params.channelId,
 	});
 }
 
@@ -184,5 +306,23 @@ export function usePostRetentionDays() {
 export function useLogin() {
 	return useMutation({
 		mutationFn: fetchUser,
+	});
+}
+
+export function useAuthTelegramStart() {
+	return useMutation({
+		mutationFn: fetchTelegramStart,
+	});
+}
+
+export function useAuthTelegramComplete() {
+	return useMutation({
+		mutationFn: fetchTelegramComplete,
+	});
+}
+
+export function useAuthTelegram2FA() {
+	return useMutation({
+		mutationFn: fetchTelegram2FA,
 	});
 }
