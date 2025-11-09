@@ -53,7 +53,7 @@ export function AuthTelegram() {
 	const authForm = useForm<ITelegeramStartSchema>({
 		resolver: standardSchemaResolver(tgSchemaStart),
 		defaultValues: {
-			session_name: 'nikitoo0os',
+			session_name: user?.login,
 			phone_number: '',
 		},
 	});
@@ -61,7 +61,7 @@ export function AuthTelegram() {
 	const confirmAuthForm = useForm<ITelegeramCompleteSchema>({
 		resolver: standardSchemaResolver(tgSchemaComplete),
 		defaultValues: {
-			session_name: 'nikitoo0os',
+			session_name: user?.login,
 			code: '',
 		},
 	});
@@ -69,7 +69,7 @@ export function AuthTelegram() {
 	const twoFAForm = useForm<ITelegeram2FASchema>({
 		resolver: standardSchemaResolver(tgSchema2FA),
 		defaultValues: {
-			session_name: 'nikitoo0os',
+			session_name: user?.login,
 			password: '',
 		},
 	});
