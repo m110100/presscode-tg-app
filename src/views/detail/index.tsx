@@ -122,7 +122,7 @@ export function DetailedChannelView() {
 	const { user } = useAuth();
 	const { channelId } = useParams<{ channelId: string }>();
 
-	const [timeRange, setTimeRange] = useState<ITimeRange>('7d');
+	const [timeRange, setTimeRange] = useState<ITimeRange>('1d');
 	const [customDateRange, setCustomDateRange] = useState<IDateRange>({
 		from: undefined,
 		to: undefined,

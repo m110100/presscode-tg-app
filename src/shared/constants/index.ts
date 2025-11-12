@@ -21,6 +21,7 @@ export const CHART_CONFIG = {
 };
 
 export const TIME_RANGE_OPTIONS = {
+	'1d': { label: 'последние сутки', days: 1 },
 	'7d': { label: 'последние 7 дней', days: 7 },
 	'30d': { label: 'последние 30 дней', days: 30 },
 	'90d': { label: 'последние 90 дней', days: 90 },

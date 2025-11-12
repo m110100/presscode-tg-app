@@ -2,7 +2,7 @@ import { z } from 'zod';
 import type { TIME_RANGE_OPTIONS } from '../constants';
 
 export const userSchema = z.object({
-	login: z.email().nonempty({ error: 'Обязательное поле' }),
+	login: z.string().nonempty({ error: 'Обязательное поле' }),
 	password: z.string().nonempty({ error: 'Обязательное поле' }),
 });
 

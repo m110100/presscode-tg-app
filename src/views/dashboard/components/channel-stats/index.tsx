@@ -265,7 +265,7 @@ export const ChannelsStats = memo(function ChannelsStats({ bots, channelNames }:
 	const { mutate: postRetentionDays, isPending: isPostingRetentionDays } =
 		usePostRetentionDays();
 
-	const [timeRange, setTimeRange] = useState<ITimeRange>('7d');
+	const [timeRange, setTimeRange] = useState<ITimeRange>('1d');
 	const [retentionDaysValue, setRetentionDaysValue] = useState<string>('');
 	const [customDateRange, setCustomDateRange] = useState<IDateRange>({
 		from: undefined,
