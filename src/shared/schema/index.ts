@@ -76,6 +76,7 @@ export interface IChannelStats {
 	leave: number;
 	requestCount: number;
 	membersCount: number;
+	updatedAt: string | null;
 }
 
 export interface ILinkStats {
@@ -92,6 +93,7 @@ export interface ILinkStats {
 		kick: number;
 		date: string;
 	}[];
+	createdAt: string | null;
 }
 
 export interface IChannelData {

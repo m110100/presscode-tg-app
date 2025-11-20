@@ -53,6 +53,7 @@ const transformInviteLinksData = (data: any[]): ILinkStats[] => {
 		kick: link.kick,
 		pendingRequests: link.pendingRequests,
 		stats: link.refStats,
+		createdAt: link.createdAt,
 	}));
 };
 

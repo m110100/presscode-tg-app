@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/select';
 import type { ILinkStats } from '@/shared/schema';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { format } from 'date-fns';
 
 type Props = {
 	data: ILinkStats[];
@@ -85,6 +86,21 @@ export function InviteLinksTable({ data, pageSizeOptions = [5, 10, 15], onRowCli
 				accessorKey: 'leave',
 				header: () => 'Кол-во выходов',
 				cell: (info) => info.getValue(),
+				meta: { align: 'right' },
+				size: 200,
+			},
+			{
+				accessorKey: 'createdAt',
+				header: () => 'Дата создания',
+				cell: (info) => {
+					const value = info.getValue() as string | null;
+
+					if (!value) {
+						return 'Отсутствует';
+					}
+
+					return format(new Date(value), 'dd.MM.yyyy HH:mm');
+				},
 				meta: { align: 'right' },
 				size: 200,
 			},

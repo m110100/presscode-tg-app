@@ -29,6 +29,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@uidotdev/usehooks';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { format } from 'date-fns';
 
 type ChannelData = {
 	channelId: number;
@@ -37,6 +38,7 @@ type ChannelData = {
 	requestCount: number;
 	enter: number;
 	leave: number;
+	updatedAt: string | null;
 };
 
 type Props = {
@@ -59,6 +61,16 @@ export function ChannelsTable({ data, pageSizeOptions = [5, 10, 15], onRowClick 
 			item.title.toLowerCase().includes(debouncedSearchQuery.toLowerCase()),
 		);
 	}, [data, debouncedSearchQuery]);
+
+	const totalStats = useMemo(() => {
+		return filteredData.reduce(
+			(acc, channel) => ({
+				totalMembers: acc.totalMembers + channel.membersCount,
+				totalRequests: acc.totalRequests + channel.requestCount,
+			}),
+			{ totalMembers: 0, totalRequests: 0 },
+		);
+	}, [filteredData]);
 
 	const columns = useMemo<ColumnDef<ChannelData>[]>(
 		() => [
@@ -93,6 +105,21 @@ export function ChannelsTable({ data, pageSizeOptions = [5, 10, 15], onRowClick 
 				accessorKey: 'leave',
 				header: () => 'Кол-во выходов',
 				cell: (info) => info.getValue(),
+				meta: { align: 'right' },
+				size: 200,
+			},
+			{
+				accessorKey: 'updatedAt',
+				header: () => 'Дата и время обновления',
+				cell: (info) => {
+					const value = info.getValue() as string | null;
+
+					if (!value) {
+						return 'Отсутствует';
+					}
+
+					return format(new Date(value), 'dd.MM.yyyy HH:mm');
+				},
 				meta: { align: 'right' },
 				size: 200,
 			},
@@ -207,16 +234,20 @@ export function ChannelsTable({ data, pageSizeOptions = [5, 10, 15], onRowClick 
 			</ScrollArea>
 
 			{/* Пагинация */}
-			<div className='flex gap-4 items-center justify-between lg:flex-row md:flex-row flex-col'>
-				<div className='text-left w-full text-sm text-muted-foreground'>
-					{pagination.pageSize === filteredData.length ? (
-						`Всего записей: ${filteredData.length}`
-					) : (
-						<>
-							Страница {table.getState().pagination.pageIndex + 1} из{' '}
-							{table.getPageCount()}. Всего записей: {filteredData.length}
-						</>
-					)}
+			<div className='flex gap-4 items-start justify-between lg:flex-row md:flex-row flex-col'>
+				<div className='flex flex-col gap-4'>
+					<div className='text-left w-full text-sm text-muted-foreground'>
+						{pagination.pageSize === filteredData.length ? (
+							`Всего записей: ${filteredData.length}`
+						) : (
+							<>
+								Страница {table.getState().pagination.pageIndex + 1} из{' '}
+								{table.getPageCount()}. Всего записей: {filteredData.length}
+							</>
+						)}
+					</div>
+					<div className='text-left w-full text-sm text-muted-foreground'>{`Количество участников: ${totalStats.totalMembers}`}</div>
+					<div className='text-left w-full text-sm text-muted-foreground'>{`Количество заявок: ${totalStats.totalRequests}`}</div>
 				</div>
 				<div className='flex w-full gap-2 items-center lg:justify-end md:justify-end'>
 					<Button
